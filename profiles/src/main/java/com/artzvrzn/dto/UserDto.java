@@ -1,5 +1,13 @@
 package com.artzvrzn.dto;
 
+import com.artzvrzn.config.jackson.serialize.LocalDateTimeDeserializer;
+import com.artzvrzn.config.jackson.serialize.LocalDateTimeSerializer;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +20,25 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class UserDto {
+  @JsonProperty(access = Access.READ_ONLY)
   private Long id;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  private LocalDateTime createdAt;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  private LocalDateTime modifiedAt;
+
   private String username;
+  private String name;
+  private String middleName;
+  private String familyName;
+  private String fullName;
+  private LocalDate birthDate;
+  private String email;
+  private LocationDto location;
 }

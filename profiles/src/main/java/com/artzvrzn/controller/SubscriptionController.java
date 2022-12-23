@@ -22,12 +22,12 @@ public class SubscriptionController {
 
   @GetMapping(value = "/followers/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<UserDto> getUserFollowers(@PathVariable("userId") Long userId) {
-    return subscriptionService.getUserFollowers(userId);
+    return subscriptionService.getUserSubscribers(userId);
   }
 
-  @GetMapping(value = "/followings/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<UserDto> getUserFollowings(@PathVariable("userId") Long userId) {
-    return subscriptionService.getUserFollowings(userId);
+    return subscriptionService.getUserSubscriptions(userId);
   }
 
   @PostMapping(value = "/follow", consumes = MediaType.APPLICATION_JSON_VALUE)
