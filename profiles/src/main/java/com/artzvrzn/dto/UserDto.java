@@ -40,5 +40,7 @@ public class UserDto {
   private String fullName;
   private LocalDate birthDate;
   private String email;
+  private String imageSmall;
+  private String imageLarge;
   private LocationDto location;
 }

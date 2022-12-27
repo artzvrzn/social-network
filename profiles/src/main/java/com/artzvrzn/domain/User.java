@@ -53,6 +53,8 @@ public class User {
   private String fullName;
   private LocalDate birthDate;
   private String email;
+  private String imageSmall;
+  private String imageLarge;
   @Embedded
   private Location location;
   @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)

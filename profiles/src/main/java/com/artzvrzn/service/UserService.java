@@ -2,6 +2,7 @@ package com.artzvrzn.service;
 
 import com.artzvrzn.dto.UserDto;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface UserService {
 
@@ -9,7 +10,7 @@ public interface UserService {
 
   UserDto getUser(Long userId);
 
-  List<UserDto> getAllUsers();
+  Page<UserDto> getAllUsers(int page, int size);
 
   void updateUser(Long userId, UserDto dto);
 

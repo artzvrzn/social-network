@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.helpers.BasicMarkerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 @Log4j2
-public class UserServiceImpl implements UserService, SubscriptionService {
+public class ProfileService implements UserService, SubscriptionService {
   private final UserRepository userRepository;
   private final SubscriptionRepository subscriptionRepository;
   private final Mapper mapper;
@@ -42,11 +44,10 @@ public class UserServiceImpl implements UserService, SubscriptionService {
   }
 
   @Override
-  public List<UserDto> getAllUsers() {
-    List<User> entities = userRepository.findAll();
-    return entities.stream()
-      .map(e -> mapper.map(e, UserDto.class))
-      .collect(Collectors.toList());
+  public Page<UserDto> getAllUsers(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<User> entities = userRepository.findAll(pageable);
+    return entities.map(e -> mapper.map(e, UserDto.class));
   }
 
   @Override
@@ -61,6 +62,8 @@ public class UserServiceImpl implements UserService, SubscriptionService {
     entity.setEmail(dto.getEmail());
     entity.setLocation(mapper.map(dto.getLocation(), Location.class));
     entity.setBirthDate(dto.getBirthDate());
+    entity.setImageSmall(dto.getImageSmall());
+    entity.setImageLarge(dto.getImageLarge());
     userRepository.save(entity);
   }
 
@@ -71,27 +74,23 @@ public class UserServiceImpl implements UserService, SubscriptionService {
   }
 
   @Override
-  public List<UserDto> getUserSubscribers(Long userId) {
-    User userEntity = userRepository.getReferenceById(userId);
-    log.info("QUERY SUBSCRIBERS");
-//    return userRepository.findAllSubscribers(userId).stream()
-//      .map(s -> s.getSubscriber())
-//    return userEntity.getSubscribers().stream()
-//      .map(s -> s.getSubscriber())
-//      .map(e -> mapper.map(e, UserDto.class))
-//      .collect(Collectors.toList());
-    return userRepository.findAllSubscribers(userId).stream()
-      .map(e -> mapper.map(e, UserDto.class))
-      .collect(Collectors.toList());
+  public Page<UserDto> getUserSubscribers(Long userId, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return subscriptionRepository.getAllSubscribers(userId, pageable)
+      .map(Subscription::getSubscriber)
+      .map(u -> mapper.map(u, UserDto.class));
+//    return userRepository.findAllSubscribers(userId, pageable)
+//      .map(e -> mapper.map(e, UserDto.class));
   }
 
   @Override
-  public List<UserDto> getUserSubscriptions(Long userId) {
-    log.info("QUERY SUBSCRIPTIONS");
-    return userRepository.findAllSubscriptions(userId).stream()
-//      .map(s -> s.getTargetUser())
-      .map(e -> mapper.map(e, UserDto.class))
-      .collect(Collectors.toList());
+  public Page<UserDto> getUserSubscriptions(Long userId, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return subscriptionRepository.getAllSubscriptions(userId, pageable)
+      .map(Subscription::getTargetUser)
+      .map(u -> mapper.map(u, UserDto.class));
+//    return userRepository.findAllSubscriptions(userId, pageable)
+//      .map(e -> mapper.map(e, UserDto.class));
   }
 
   @Override
