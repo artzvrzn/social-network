@@ -2,17 +2,17 @@ package com.artzvrzn.service.impl;
 
 import com.artzvrzn.dao.SubscriptionRepository;
 import com.artzvrzn.dao.UserRepository;
-import com.artzvrzn.domain.Location;
 import com.artzvrzn.domain.Subscription;
 import com.artzvrzn.domain.Subscription.SubscriptionId;
 import com.artzvrzn.domain.User;
+import com.artzvrzn.dto.PageDto;
 import com.artzvrzn.dto.SubscriptionDto;
 import com.artzvrzn.dto.UserDto;
-import com.artzvrzn.mapper.Mapper;
+import com.artzvrzn.mapper.PageMapper;
+import com.artzvrzn.mapper.UserMapper;
+import com.artzvrzn.mapper.UserPageMapper;
 import com.artzvrzn.service.SubscriptionService;
 import com.artzvrzn.service.UserService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -28,26 +28,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProfileService implements UserService, SubscriptionService {
   private final UserRepository userRepository;
   private final SubscriptionRepository subscriptionRepository;
-  private final Mapper mapper;
+  private final UserMapper userMapper;
+  private final UserPageMapper pageMapper;
 
   @Override
   @Transactional
   public void createUser(UserDto dto) {
-    User entity = mapper.map(dto, User.class);
+    User entity = userMapper.map(dto);
     userRepository.save(entity);
   }
 
   @Override
   public UserDto getUser(Long userId) {
-    User entity = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-    return mapper.map(entity, UserDto.class);
+    User entity = userRepository.findById(userId)
+      .orElseThrow(() -> new IllegalArgumentException("User doesn't exist"));
+    return userMapper.map(entity);
   }
 
   @Override
-  public Page<UserDto> getAllUsers(int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
+  public PageDto<UserDto> getAllUsers(int page, int size) {
+    Pageable pageable = buildPageable(page, size);
     Page<User> entities = userRepository.findAll(pageable);
-    return entities.map(e -> mapper.map(e, UserDto.class));
+    return pageMapper.map(entities);
   }
 
   @Override
@@ -60,7 +62,7 @@ public class ProfileService implements UserService, SubscriptionService {
     entity.setFullName(dto.getFullName());
     entity.setUsername(dto.getUsername());
     entity.setEmail(dto.getEmail());
-    entity.setLocation(mapper.map(dto.getLocation(), Location.class));
+    entity.setLocation(userMapper.map(dto.getLocation()));
     entity.setBirthDate(dto.getBirthDate());
     entity.setImageSmall(dto.getImageSmall());
     entity.setImageLarge(dto.getImageLarge());
@@ -75,22 +77,18 @@ public class ProfileService implements UserService, SubscriptionService {
 
   @Override
   public Page<UserDto> getUserSubscribers(Long userId, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = buildPageable(page, size);
     return subscriptionRepository.getAllSubscribers(userId, pageable)
       .map(Subscription::getSubscriber)
-      .map(u -> mapper.map(u, UserDto.class));
-//    return userRepository.findAllSubscribers(userId, pageable)
-//      .map(e -> mapper.map(e, UserDto.class));
+      .map(userMapper::map);
   }
 
   @Override
   public Page<UserDto> getUserSubscriptions(Long userId, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = buildPageable(page, size);
     return subscriptionRepository.getAllSubscriptions(userId, pageable)
       .map(Subscription::getTargetUser)
-      .map(u -> mapper.map(u, UserDto.class));
-//    return userRepository.findAllSubscriptions(userId, pageable)
-//      .map(e -> mapper.map(e, UserDto.class));
+      .map(userMapper::map);
   }
 
   @Override
@@ -111,5 +109,9 @@ public class ProfileService implements UserService, SubscriptionService {
   public void unfollowUser(SubscriptionDto dto) {
     SubscriptionId id = new SubscriptionId(dto.getTargetUserId(), dto.getSubscriberId());
     subscriptionRepository.deleteById(id);
+  }
+
+  private Pageable buildPageable(int page, int size) {
+    return PageRequest.of(page - 1, size);
   }
 }

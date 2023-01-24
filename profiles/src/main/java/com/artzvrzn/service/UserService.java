@@ -1,5 +1,6 @@
 package com.artzvrzn.service;
 
+import com.artzvrzn.dto.PageDto;
 import com.artzvrzn.dto.UserDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,7 @@ public interface UserService {
 
   UserDto getUser(Long userId);
 
-  Page<UserDto> getAllUsers(int page, int size);
+  PageDto<UserDto> getAllUsers(int page, int size);
 
   void updateUser(Long userId, UserDto dto);
 

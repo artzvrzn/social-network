@@ -1,4 +1,4 @@
-package com.artzvrzn.controller;
+package com.artzvrzn.controller.rest;
 
 import com.artzvrzn.dto.SubscriptionDto;
 import com.artzvrzn.dto.UserDto;

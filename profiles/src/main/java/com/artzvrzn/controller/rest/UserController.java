@@ -1,5 +1,6 @@
-package com.artzvrzn.controller;
+package com.artzvrzn.controller.rest;
 
+import com.artzvrzn.dto.PageDto;
 import com.artzvrzn.dto.UserDto;
 import com.artzvrzn.service.UserService;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -39,13 +42,11 @@ public class UserController {
   }
   @GetMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<Page<UserDto>> getAllUsers(
+  public PageDto<UserDto> getAllUsers(
     @RequestParam("page") int page,
     @RequestParam("size") int size
   ) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Access-Control-Allow-Origin", "*");
-    return ResponseEntity.ok().headers(headers).body(userService.getAllUsers(page, size));
+    return userService.getAllUsers(page, size);
   }
 
   @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
