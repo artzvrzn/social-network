@@ -1,4 +1,3 @@
-
 auth-server:
   http://auth-service:8181
 realm-name:
@@ -10,8 +9,8 @@ spring:
     name: gateway-service
   cloud:
     gateway:
-      default-filters:
-        - TokenRelay=
+#      default-filters: USED TO PASS A TOKEN TO THE BACKEND IN CASE GATEWAY IS THE CLIENT
+#        - TokenRelay=
       routes:
         - id: profile
           uri: lb://profile-service
