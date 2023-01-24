@@ -31,11 +31,11 @@ public class Subscription {
   @CreatedDate
   private LocalDateTime createdAt;
   @ManyToOne
-  @MapsId("targetUserId")
-  private User targetUser;
+  @MapsId("targetId")
+  private Profile target;
   @ManyToOne
   @MapsId("subscriberId")
-  private User subscriber;
+  private Profile subscriber;
 
   @Embeddable
   @AllArgsConstructor
@@ -43,7 +43,7 @@ public class Subscription {
   @Getter
   @Setter
   public static class SubscriptionId implements Serializable {
-    private Long targetUserId;
+    private Long targetId;
     private Long subscriberId;
   }
 }

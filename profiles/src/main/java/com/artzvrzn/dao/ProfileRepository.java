@@ -1,9 +1,9 @@
 package com.artzvrzn.dao;
 
-import com.artzvrzn.domain.User;
+import com.artzvrzn.domain.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
 }

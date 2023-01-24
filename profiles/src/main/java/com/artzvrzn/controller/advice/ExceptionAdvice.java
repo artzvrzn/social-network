@@ -21,7 +21,7 @@ public class ExceptionAdvice {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ResponseError> exceptionHandler(Exception exc) {
     return new ResponseEntity<>(
-      new ResponseError("Server failed to process request"), HttpStatus.INTERNAL_SERVER_ERROR);
+      new ResponseError(exc.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @Getter

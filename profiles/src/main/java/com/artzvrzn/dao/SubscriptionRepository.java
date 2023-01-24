@@ -14,10 +14,10 @@ import org.springframework.stereotype.Repository;
 public interface SubscriptionRepository extends JpaRepository<Subscription, SubscriptionId> {
 
   @EntityGraph(attributePaths = "subscriber")
-  @Query("from Subscription s where s.targetUser.id = :userId")
-  Page<Subscription> getAllSubscribers(@Param("userId") Long userId, Pageable pageable);
+  @Query("from Subscription s where s.target.id = :profileId")
+  Page<Subscription> getAllSubscribers(@Param("profileId") Long profileId, Pageable pageable);
 
-  @EntityGraph(attributePaths = "targetUser")
-  @Query("from Subscription s where s.subscriber.id = :userId")
-  Page<Subscription> getAllSubscriptions(@Param("userId") Long userId, Pageable pageable);
+  @EntityGraph(attributePaths = "target")
+  @Query("from Subscription s where s.subscriber.id = :profileId")
+  Page<Subscription> getAllSubscriptions(@Param("profileId") Long profileId, Pageable pageable);
 }

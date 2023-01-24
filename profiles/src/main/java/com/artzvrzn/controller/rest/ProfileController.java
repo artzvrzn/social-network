@@ -1,15 +1,11 @@
 package com.artzvrzn.controller.rest;
 
 import com.artzvrzn.dto.PageDto;
-import com.artzvrzn.dto.UserDto;
-import com.artzvrzn.service.UserService;
-import java.util.List;
+import com.artzvrzn.dto.ProfileDto;
+import com.artzvrzn.service.ProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,38 +22,38 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-public class UserController {
-  private final UserService userService;
+public class ProfileController {
+  private final ProfileService profileService;
 
   @PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public void createUser(@RequestBody UserDto dto) {
-    userService.createUser(dto);
+  public void createUser(@RequestBody ProfileDto dto) {
+    profileService.createProfile(dto);
   }
 
   @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public UserDto getUser(@PathVariable("userId") Long userId) {
-    return userService.getUser(userId);
+  public ProfileDto getUser(@PathVariable("userId") Long userId) {
+    return profileService.getProfile(userId);
   }
   @GetMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public PageDto<UserDto> getAllUsers(
+  public PageDto<ProfileDto> getAllUsers(
     @RequestParam("page") int page,
     @RequestParam("size") int size
   ) {
-    return userService.getAllUsers(page, size);
+    return profileService.getProfiles(page, size);
   }
 
   @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto dto) {
-    userService.updateUser(userId, dto);
+  public void updateUser(@PathVariable("userId") Long userId, @RequestBody ProfileDto dto) {
+    profileService.updateProfile(userId, dto);
   }
 
   @DeleteMapping(value = "/{userId}")
   @ResponseStatus(HttpStatus.OK)
   public void deleteUser(@PathVariable("userId") Long userId) {
-    userService.deleteUser(userId);
+    profileService.deleteProfile(userId);
   }
 }

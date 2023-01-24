@@ -1,18 +1,17 @@
 package com.artzvrzn.service.impl;
 
 import com.artzvrzn.dao.SubscriptionRepository;
-import com.artzvrzn.dao.UserRepository;
+import com.artzvrzn.dao.ProfileRepository;
+import com.artzvrzn.domain.Profile;
 import com.artzvrzn.domain.Subscription;
 import com.artzvrzn.domain.Subscription.SubscriptionId;
-import com.artzvrzn.domain.User;
 import com.artzvrzn.dto.PageDto;
 import com.artzvrzn.dto.SubscriptionDto;
-import com.artzvrzn.dto.UserDto;
-import com.artzvrzn.mapper.PageMapper;
-import com.artzvrzn.mapper.UserMapper;
-import com.artzvrzn.mapper.UserPageMapper;
+import com.artzvrzn.dto.ProfileDto;
+import com.artzvrzn.mapper.ProfileMapper;
+import com.artzvrzn.mapper.ProfilePageMapper;
 import com.artzvrzn.service.SubscriptionService;
-import com.artzvrzn.service.UserService;
+import com.artzvrzn.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -25,80 +24,79 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 @Log4j2
-public class ProfileService implements UserService, SubscriptionService {
-  private final UserRepository userRepository;
+public class ProfileServiceImpl implements ProfileService, SubscriptionService {
+  private final ProfileRepository profileRepository;
   private final SubscriptionRepository subscriptionRepository;
-  private final UserMapper userMapper;
-  private final UserPageMapper pageMapper;
+  private final ProfileMapper profileMapper;
+  private final ProfilePageMapper pageMapper;
 
   @Override
   @Transactional
-  public void createUser(UserDto dto) {
-    User entity = userMapper.map(dto);
-    userRepository.save(entity);
+  public void createProfile(ProfileDto dto) {
+    Profile entity = profileMapper.map(dto);
+    profileRepository.save(entity);
   }
 
   @Override
-  public UserDto getUser(Long userId) {
-    User entity = userRepository.findById(userId)
-      .orElseThrow(() -> new IllegalArgumentException("User doesn't exist"));
-    return userMapper.map(entity);
+  public ProfileDto getProfile(Long userId) {
+    Profile entity = profileRepository.findById(userId)
+      .orElseThrow(() -> new IllegalArgumentException("Profile doesn't exist"));
+    return profileMapper.map(entity);
   }
 
   @Override
-  public PageDto<UserDto> getAllUsers(int page, int size) {
+  public PageDto<ProfileDto> getProfiles(int page, int size) {
     Pageable pageable = buildPageable(page, size);
-    Page<User> entities = userRepository.findAll(pageable);
+    Page<Profile> entities = profileRepository.findAll(pageable);
     return pageMapper.map(entities);
   }
 
   @Override
   @Transactional
-  public void updateUser(Long userId, UserDto dto) {
-    User entity = userRepository.getReferenceById(userId);
+  public void updateProfile(Long profileId, ProfileDto dto) {
+    Profile entity = profileRepository.getReferenceById(profileId);
     entity.setName(dto.getName());
     entity.setMiddleName(dto.getMiddleName());
     entity.setFamilyName(dto.getFamilyName());
-    entity.setFullName(dto.getFullName());
     entity.setUsername(dto.getUsername());
     entity.setEmail(dto.getEmail());
-    entity.setLocation(userMapper.map(dto.getLocation()));
+    entity.setLocation(profileMapper.map(dto.getLocation()));
     entity.setBirthDate(dto.getBirthDate());
     entity.setImageSmall(dto.getImageSmall());
     entity.setImageLarge(dto.getImageLarge());
-    userRepository.save(entity);
+    profileRepository.save(entity);
   }
 
   @Override
   @Transactional
-  public void deleteUser(Long userId) {
-    userRepository.deleteById(userId);
+  public void deleteProfile(Long profileId) {
+    profileRepository.deleteById(profileId);
   }
 
   @Override
-  public Page<UserDto> getUserSubscribers(Long userId, int page, int size) {
+  public Page<ProfileDto> getSubscribers(Long userId, int page, int size) {
     Pageable pageable = buildPageable(page, size);
     return subscriptionRepository.getAllSubscribers(userId, pageable)
       .map(Subscription::getSubscriber)
-      .map(userMapper::map);
+      .map(profileMapper::map);
   }
 
   @Override
-  public Page<UserDto> getUserSubscriptions(Long userId, int page, int size) {
+  public Page<ProfileDto> getSubscriptions(Long userId, int page, int size) {
     Pageable pageable = buildPageable(page, size);
     return subscriptionRepository.getAllSubscriptions(userId, pageable)
-      .map(Subscription::getTargetUser)
-      .map(userMapper::map);
+      .map(Subscription::getTarget)
+      .map(profileMapper::map);
   }
 
   @Override
   @Transactional
-  public void followUser(SubscriptionDto dto) {
-    User targetUserId = userRepository.getReferenceById(dto.getTargetUserId());
-    User subscriberId = userRepository.getReferenceById(dto.getSubscriberId());
+  public void follow(SubscriptionDto dto) {
+    Profile targetId = profileRepository.getReferenceById(dto.getTargetId());
+    Profile subscriberId = profileRepository.getReferenceById(dto.getSubscriberId());
     Subscription subscriptionEntity = Subscription.builder()
-      .id(new SubscriptionId(targetUserId.getId(), subscriberId.getId()))
-      .targetUser(targetUserId)
+      .id(new SubscriptionId(targetId.getId(), subscriberId.getId()))
+      .target(targetId)
       .subscriber(subscriberId)
       .build();
     subscriptionRepository.save(subscriptionEntity);
@@ -106,8 +104,8 @@ public class ProfileService implements UserService, SubscriptionService {
 
   @Override
   @Transactional
-  public void unfollowUser(SubscriptionDto dto) {
-    SubscriptionId id = new SubscriptionId(dto.getTargetUserId(), dto.getSubscriberId());
+  public void unfollow(SubscriptionDto dto) {
+    SubscriptionId id = new SubscriptionId(dto.getTargetId(), dto.getSubscriberId());
     subscriptionRepository.deleteById(id);
   }
 

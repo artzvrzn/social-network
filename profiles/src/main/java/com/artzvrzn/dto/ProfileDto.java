@@ -19,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class ProfileDto {
   @JsonProperty(access = Access.READ_ONLY)
   private Long id;
 
@@ -32,12 +32,10 @@ public class UserDto {
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   private LocalDateTime modifiedAt;
-
   private String username;
   private String name;
   private String middleName;
   private String familyName;
-  private String fullName;
   private LocalDate birthDate;
   private String email;
   private String imageSmall;

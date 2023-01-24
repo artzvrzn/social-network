@@ -9,12 +9,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -28,14 +25,14 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "user", schema = "app")
+@Table(name = "profile", schema = "app")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class Profile {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
@@ -50,14 +47,13 @@ public class User {
   private String name;
   private String middleName;
   private String familyName;
-  private String fullName;
   private LocalDate birthDate;
   private String email;
   private String imageSmall;
   private String imageLarge;
   @Embedded
   private Location location;
-  @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Subscription> subscribers = new ArrayList<>();
   @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Subscription> subscriptions = new ArrayList<>();

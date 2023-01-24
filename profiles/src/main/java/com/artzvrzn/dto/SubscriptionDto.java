@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubscriptionDto {
-  private Long targetUserId;
+  private Long targetId;
   private Long subscriberId;
 }

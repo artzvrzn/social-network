@@ -1,17 +1,16 @@
 package com.artzvrzn.service;
 
 import com.artzvrzn.dto.SubscriptionDto;
-import com.artzvrzn.dto.UserDto;
-import java.util.List;
+import com.artzvrzn.dto.ProfileDto;
 import org.springframework.data.domain.Page;
 
 public interface SubscriptionService {
 
-  Page<UserDto> getUserSubscribers(Long userId, int page, int size);
+  Page<ProfileDto> getSubscribers(Long profileId, int page, int size);
 
-  Page<UserDto> getUserSubscriptions(Long userId, int page, int size);
+  Page<ProfileDto> getSubscriptions(Long profileId, int page, int size);
 
-  void followUser(SubscriptionDto dto);
+  void follow(SubscriptionDto dto);
 
-  void unfollowUser(SubscriptionDto dto);
+  void unfollow(SubscriptionDto dto);
 }

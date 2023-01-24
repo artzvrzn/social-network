@@ -1,9 +1,8 @@
 package com.artzvrzn.controller.rest;
 
 import com.artzvrzn.dto.SubscriptionDto;
-import com.artzvrzn.dto.UserDto;
+import com.artzvrzn.dto.ProfileDto;
 import com.artzvrzn.service.SubscriptionService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -23,30 +22,30 @@ public class SubscriptionController {
   private final SubscriptionService subscriptionService;
 
   @GetMapping(value = "/followers/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Page<UserDto> getUserFollowers(
+  public Page<ProfileDto> getUserSubscribers(
     @PathVariable("userId") Long userId,
     @RequestParam("page") int page,
     @RequestParam("size") int size
   ) {
-    return subscriptionService.getUserSubscribers(userId, page, size);
+    return subscriptionService.getSubscribers(userId, page, size);
   }
 
   @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Page<UserDto> getUserFollowings(
+  public Page<ProfileDto> getUserSubscriptions(
     @PathVariable("userId") Long userId,
     @RequestParam("page") int page,
     @RequestParam("size") int size
   ) {
-    return subscriptionService.getUserSubscriptions(userId, page, size);
+    return subscriptionService.getSubscriptions(userId, page, size);
   }
 
   @PostMapping(value = "/follow", consumes = MediaType.APPLICATION_JSON_VALUE)
   public void followUser(@RequestBody SubscriptionDto dto) {
-    subscriptionService.followUser(dto);
+    subscriptionService.follow(dto);
   }
 
   @DeleteMapping(value = "/unfollow", consumes = MediaType.APPLICATION_JSON_VALUE)
   public void unfollowUser(@RequestBody SubscriptionDto dto) {
-    subscriptionService.unfollowUser(dto);
+    subscriptionService.unfollow(dto);
   }
 }
