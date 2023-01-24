@@ -1,0 +1,49 @@
+
+auth-server:
+  http://auth-service:8181
+realm-name:
+  spring-boot
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay=
+      routes:
+        - id: profile
+          uri: lb://profile-service
+          predicates:
+            - Path=/profile/**
+  security:
+    oauth2:
+#      client:
+#        provider:
+#          keycloak:
+#            issuer-uri: ${auth-server}/realms/${realm-name}
+#        registration:
+#          social-network:
+#            provider: keycloak
+#            client-id: social-network
+#            authorization-grant-type: authorization_code
+#            client-secret: 6LdJX1JtYgJxPYI2JE9rq8vFv70SidPy
+#            scope: openid
+      resourceserver:
+        jwt:
+          issuer-uri: ${auth-server}/realms/${realm-name}
+
+eureka:
+  instance:
+    hostname: localhost
+    port: 8761
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
