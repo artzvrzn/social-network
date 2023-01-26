@@ -15,11 +15,13 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ResponseError> illegalArgumentHandler(IllegalArgumentException exc) {
+    log.error(exc);
     return new ResponseEntity<>(new ResponseError(exc.getMessage()), HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ResponseError> exceptionHandler(Exception exc) {
+    log.error(exc);
     return new ResponseEntity<>(
       new ResponseError(exc.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
   }

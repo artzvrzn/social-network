@@ -1,5 +1,5 @@
 auth-server:
-  http://auth-service:8181
+  http://localhost:8181
 realm-name:
   spring-boot
 server:
@@ -9,8 +9,6 @@ spring:
     name: gateway-service
   cloud:
     gateway:
-#      default-filters: USED TO PASS A TOKEN TO THE BACKEND IN CASE GATEWAY IS THE CLIENT
-#        - TokenRelay=
       routes:
         - id: profile
           uri: lb://profile-service
@@ -43,6 +41,8 @@ eureka:
 
 logging:
   level:
+    reactor:
+      netty: INFO
     org:
       springframework:
         security: DEBUG

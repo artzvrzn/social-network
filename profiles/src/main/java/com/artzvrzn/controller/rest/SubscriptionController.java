@@ -21,31 +21,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriptionController {
   private final SubscriptionService subscriptionService;
 
-  @GetMapping(value = "/followers/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Page<ProfileDto> getUserSubscribers(
-    @PathVariable("userId") Long userId,
+  @GetMapping(value = "/followers/{profileId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Page<ProfileDto> getSubscribers(
+    @PathVariable("profileId") Long profileId,
     @RequestParam("page") int page,
     @RequestParam("size") int size
   ) {
-    return subscriptionService.getSubscribers(userId, page, size);
+    return subscriptionService.getSubscribers(profileId, page, size);
   }
 
-  @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Page<ProfileDto> getUserSubscriptions(
-    @PathVariable("userId") Long userId,
+  @GetMapping(value = "/{profileId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Page<ProfileDto> getSubscriptions(
+    @PathVariable("profileId") Long profileId,
     @RequestParam("page") int page,
     @RequestParam("size") int size
   ) {
-    return subscriptionService.getSubscriptions(userId, page, size);
+    return subscriptionService.getSubscriptions(profileId, page, size);
   }
 
   @PostMapping(value = "/follow", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public void followUser(@RequestBody SubscriptionDto dto) {
+  public void follow(@RequestBody SubscriptionDto dto) {
     subscriptionService.follow(dto);
   }
 
   @DeleteMapping(value = "/unfollow", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public void unfollowUser(@RequestBody SubscriptionDto dto) {
+  public void unfollow(@RequestBody SubscriptionDto dto) {
     subscriptionService.unfollow(dto);
   }
 }

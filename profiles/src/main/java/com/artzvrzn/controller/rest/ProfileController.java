@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -27,13 +26,13 @@ public class ProfileController {
 
   @PostMapping(value = {"", "/"}, consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public void createUser(@RequestBody ProfileDto dto) {
+  public void createProfile(@RequestBody ProfileDto dto) {
     profileService.createProfile(dto);
   }
 
   @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public ProfileDto getUser(@PathVariable("userId") Long userId) {
+  public ProfileDto getProfile(@PathVariable("userId") Long userId) {
     return profileService.getProfile(userId);
   }
   @GetMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_VALUE)
