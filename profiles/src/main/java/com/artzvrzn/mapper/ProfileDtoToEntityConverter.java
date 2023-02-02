@@ -1,16 +1,13 @@
 package com.artzvrzn.mapper;
 
-import com.artzvrzn.domain.Location;
 import com.artzvrzn.domain.Profile;
-import com.artzvrzn.dto.LocationDto;
 import com.artzvrzn.dto.ProfileDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.core.convert.converter.Converter;
 
-@Mapper
-public interface ProfileMapper {
-
-  ProfileDto map(Profile profile);
+@Mapper(uses = {LocationEntityToDtoConverter.class, LocationDtoToEntityConverter.class})
+public interface ProfileDtoToEntityConverter extends Converter<ProfileDto, Profile> {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
@@ -18,9 +15,5 @@ public interface ProfileMapper {
   @Mapping(target = "subscriptions", ignore = true)
   @Mapping(target = "subscribers", ignore = true)
   @Mapping(target = "isDeleted", ignore = true)
-  Profile map(ProfileDto profile);
-
-  Location map(LocationDto location);
-
-  LocationDto map(Location location);
+  Profile convert(ProfileDto source);
 }
