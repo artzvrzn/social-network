@@ -1,33 +1,22 @@
 package com.artzvrzn.service.impl;
 
-import com.artzvrzn.dao.SubscriptionRepository;
 import com.artzvrzn.dao.ProfileRepository;
+import com.artzvrzn.domain.Location;
 import com.artzvrzn.domain.Profile;
-import com.artzvrzn.domain.Subscription;
-import com.artzvrzn.domain.Subscription.SubscriptionId;
-import com.artzvrzn.dto.PageDto;
-import com.artzvrzn.dto.SubscriptionDto;
 import com.artzvrzn.dto.ProfileDto;
-import com.artzvrzn.mapper.ProfileMapper;
-import com.artzvrzn.mapper.ProfilePageMapper;
+import com.artzvrzn.model.projection.ProfileView;
 import com.artzvrzn.service.AuthService;
-import com.artzvrzn.service.SubscriptionService;
 import com.artzvrzn.service.ProfileService;
 import com.artzvrzn.util.ClaimsUtil;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,50 +27,54 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class ProfileServiceImpl implements ProfileService {
   private final ProfileRepository profileRepository;
-  private final ProfileMapper profileMapper;
-  private final ProfilePageMapper pageMapper;
   private final AuthService authService;
+  private final ConversionService converter;
   @Autowired
   private ProfileService self;
 
   @Override
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void createProfile(ProfileDto dto) {
-    Profile entity = profileMapper.map(dto);
-    String owner = authService.getAuthenticatedUser();
-    entity.setOwner(owner);
+    Profile entity = converter.convert(dto, Profile.class);
+    String subject = authService.getAuthenticatedUser();
+    entity.setOwner(subject);
     profileRepository.save(entity);
-    log.info("profile of user {} has been successfully created", owner);
+    log.info("profile of user {} has been successfully created", subject);
   }
 
   @Override
   public ProfileDto getProfile(Long profileId) {
-    Profile entity = profileRepository.findById(profileId)
+    String subject = authService.getAuthenticatedUser();
+    ProfileView profileView =
+      profileRepository.findByIdWithSubscriptionStatusAndQuantity(profileId, subject)
       .orElseThrow(() -> new IllegalArgumentException("Profile doesn't exist"));
-    return profileMapper.map(entity);
+    return converter.convert(profileView, ProfileDto.class);
   }
 
   @Override
   public ProfileDto getProfile() {
-    String owner = authService.getAuthenticatedUser();
-    Optional<Profile> optional = profileRepository.findProfileByOwner(owner);
+    String subject = authService.getAuthenticatedUser();
+    Optional<ProfileView> optional =
+      profileRepository.findByOwnerWithSubscriptionQuantity(subject);
     if (optional.isEmpty()) {
-      log.info("{} tries to access profile, but profile doesn't exist", owner);
+      log.info("{} tries to access profile, but profile doesn't exist", subject);
       ProfileDto dto = dtoFromClaims(authService.getClaims());
       self.createProfile(dto);
-      optional = profileRepository.findProfileByOwner(owner);
+      optional = profileRepository.findByOwnerWithSubscriptionQuantity(subject);
     }
     if (optional.isPresent()) {
-      return profileMapper.map(optional.get());
+      return converter.convert(optional.get(), ProfileDto.class);
     }
     throw new IllegalStateException("failed to find profile");
   }
 
   @Override
-  public PageDto<ProfileDto> getProfiles(int page, int size) {
-    Pageable pageable = buildPageable(page, size);
-    Page<Profile> entities = profileRepository.findAll(pageable);
-    return pageMapper.map(entities);
+  public Page<ProfileDto> getProfiles(int page, int size) {
+    String subject = authService.getAuthenticatedUser();
+    Pageable pageable = PageRequest.of(page, size);
+    Page<ProfileView> projections =
+      profileRepository.findAllWithSubscriptionStatusAndQuantity(subject, pageable);
+    return projections.map(e -> converter.convert(e, ProfileDto.class));
   }
 
   @Override
@@ -93,7 +86,7 @@ public class ProfileServiceImpl implements ProfileService {
     entity.setFamilyName(dto.getFamilyName());
     entity.setUsername(dto.getUsername());
     entity.setEmail(dto.getEmail());
-    entity.setLocation(profileMapper.map(dto.getLocation()));
+    entity.setLocation(converter.convert(dto.getLocation(), Location.class));
     entity.setBirthDate(dto.getBirthDate());
     entity.setImageSmall(dto.getImageSmall());
     entity.setImageLarge(dto.getImageLarge());
@@ -114,10 +107,6 @@ public class ProfileServiceImpl implements ProfileService {
   @Override
   public void deleteProfile(String owner) {
 
-  }
-
-  private Pageable buildPageable(int page, int size) {
-    return PageRequest.of(page - 1, size);
   }
 
   private ProfileDto dtoFromClaims(Map<String, Object> claims) {

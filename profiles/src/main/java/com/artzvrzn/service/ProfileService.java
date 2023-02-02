@@ -1,7 +1,7 @@
 package com.artzvrzn.service;
 
-import com.artzvrzn.dto.PageDto;
 import com.artzvrzn.dto.ProfileDto;
+import org.springframework.data.domain.Page;
 
 public interface ProfileService {
 
@@ -11,7 +11,7 @@ public interface ProfileService {
 
   ProfileDto getProfile();
 
-  PageDto<ProfileDto> getProfiles(int page, int size);
+  Page<ProfileDto> getProfiles(int page, int size);
 
   void updateProfile(Long profileId, ProfileDto dto);
 

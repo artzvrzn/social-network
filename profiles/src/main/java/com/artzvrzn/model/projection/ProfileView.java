@@ -1,6 +1,5 @@
 package com.artzvrzn.model.projection;
 
-import com.artzvrzn.dto.LocationDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -32,9 +31,9 @@ public interface ProfileView {
 
   Boolean getIsDeleted();
 
-  Integer getSubscribersAmount();
+  Integer getSubscribers();
 
-  Integer getSubscriptionsAmount();
+  Integer getSubscriptions();
 
   Boolean getIsSubscriber();
 

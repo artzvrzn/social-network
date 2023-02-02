@@ -7,9 +7,9 @@ import com.artzvrzn.domain.Subscription;
 import com.artzvrzn.domain.Subscription.SubscriptionId;
 import com.artzvrzn.dto.ProfileDto;
 import com.artzvrzn.dto.SubscriptionDto;
-import com.artzvrzn.mapper.ProfileMapper;
 import com.artzvrzn.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,22 +23,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscriptionServiceImpl implements SubscriptionService {
   private final SubscriptionRepository subscriptionRepository;
   private final ProfileRepository profileRepository;
-  private final ProfileMapper profileMapper;
+  private final ConversionService converter;
 
   @Override
   public Page<ProfileDto> getSubscribers(Long userId, int page, int size) {
-    Pageable pageable = buildPageable(page, size);
+    Pageable pageable = PageRequest.of(page, size);
     return subscriptionRepository.getAllSubscribers(userId, pageable)
       .map(Subscription::getSubscriber)
-      .map(profileMapper::map);
+      .map(e -> converter.convert(e, ProfileDto.class));
   }
 
   @Override
   public Page<ProfileDto> getSubscriptions(Long userId, int page, int size) {
-    Pageable pageable = buildPageable(page, size);
+    Pageable pageable = PageRequest.of(page, size);
     return subscriptionRepository.getAllSubscriptions(userId, pageable)
       .map(Subscription::getTarget)
-      .map(profileMapper::map);
+      .map(e -> converter.convert(e, ProfileDto.class));
   }
 
   @Override
@@ -59,9 +59,5 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   public void unfollow(SubscriptionDto dto) {
     SubscriptionId id = new SubscriptionId(dto.getTargetId(), dto.getSubscriberId());
     subscriptionRepository.deleteById(id);
-  }
-
-  private Pageable buildPageable(int page, int size) {
-    return PageRequest.of(page - 1, size);
   }
 }
