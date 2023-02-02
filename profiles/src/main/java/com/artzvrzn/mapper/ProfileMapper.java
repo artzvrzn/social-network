@@ -17,6 +17,7 @@ public interface ProfileMapper {
   @Mapping(target = "modifiedAt", ignore = true)
   @Mapping(target = "subscriptions", ignore = true)
   @Mapping(target = "subscribers", ignore = true)
+  @Mapping(target = "isDeleted", ignore = true)
   Profile map(ProfileDto profile);
 
   Location map(LocationDto location);

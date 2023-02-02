@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 
 public interface SubscriptionService {
 
+
   Page<ProfileDto> getSubscribers(Long profileId, int page, int size);
 
   Page<ProfileDto> getSubscriptions(Long profileId, int page, int size);

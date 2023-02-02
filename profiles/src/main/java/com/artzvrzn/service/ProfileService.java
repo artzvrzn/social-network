@@ -9,9 +9,15 @@ public interface ProfileService {
 
   ProfileDto getProfile(Long profileId);
 
+  ProfileDto getProfile();
+
   PageDto<ProfileDto> getProfiles(int page, int size);
 
   void updateProfile(Long profileId, ProfileDto dto);
 
+  void updateProfile(String owner, ProfileDto dto);
+
   void deleteProfile(Long profileId);
+
+  void deleteProfile(String owner);
 }

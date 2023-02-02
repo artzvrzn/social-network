@@ -13,11 +13,8 @@ import org.springframework.web.cors.reactive.CorsUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
-
 import reactor.core.publisher.Mono;
-/**
- * @author Thirumal
- */
+
 @Configuration
 public class CorsConfiguration {
 
@@ -27,6 +24,7 @@ public class CorsConfiguration {
   private static final String MAX_AGE = "7200"; //2 hours (2 * 60 * 60)
 
   @Bean
+@Order(Ordered.HIGHEST_PRECEDENCE) //IMPORTANT!
   public WebFilter corsFilter() {
     return (ServerWebExchange ctx, WebFilterChain chain) -> {
       ServerHttpRequest request = ctx.getRequest();
