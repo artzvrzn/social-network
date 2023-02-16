@@ -71,7 +71,7 @@ public class ProfileServiceImpl implements ProfileService {
   @Override
   public Page<ProfileDto> getProfiles(int page, int size) {
     String subject = authService.getAuthenticatedUser();
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = buildPageable(page, size);
     Page<ProfileView> projections =
       profileRepository.findAllWithSubscriptionStatusAndQuantity(subject, pageable);
     return projections.map(e -> converter.convert(e, ProfileDto.class));
@@ -111,5 +111,9 @@ public class ProfileServiceImpl implements ProfileService {
 
   private ProfileDto dtoFromClaims(Map<String, Object> claims) {
     return ClaimsUtil.profileDtoFromClaims(claims);
+  }
+
+  private Pageable buildPageable(int page, int size) {
+    return PageRequest.of(page - 1, size);
   }
 }
