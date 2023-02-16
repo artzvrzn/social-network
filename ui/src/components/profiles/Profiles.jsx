@@ -6,7 +6,14 @@ const Profiles = (props) => {
     return (
         <div>
             <Pagination pageNumber={props.pageNumber} totalPages={props.totalPages} onPageChanged={props.onPageChanged} />
-            <div>{props.profiles.map(profile => <ProfilesItem user={profile} onUserClicked={props.onUserClicked}/>)}</div>
+            <div>{props.profiles.map(profile =>
+                <ProfilesItem
+                    profile={profile}
+                    onFollowClicked={props.onFollowClicked}
+                    onUnfollowClicked={props.onUnfollowClicked}
+                    subscriptionInProgress={props.subscriptionInProgress}
+                />)}
+            </div>
         </div>
     );
 }

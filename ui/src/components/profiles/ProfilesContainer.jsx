@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import Profiles from "./Profiles";
-import {getProfilesThunk} from "../../service/store/reducer/ProfilesReducer";
+import {followProfileThunk, getProfilesThunk, unfollowProfileThunk} from "../../service/store/reducer/ProfilesReducer";
 import {withPreloaderHOC} from "../../hoc/Hocs";
 import {compose} from "redux";
 
@@ -17,7 +17,9 @@ class ProfilesContainer extends React.Component {
                 pageNumber={this.props.pageNumber}
                 totalPages={this.props.totalPages}
                 onPageChanged={this.onPageChanged}
-                onUserClicked={this.onUserClicked}
+                onFollowClicked={this.props.followProfile}
+                onUnfollowClicked={this.props.unfollowProfile}
+                subscriptionInProgress={this.props.subscriptionInProgress}
             />
         );
     }
@@ -40,13 +42,16 @@ const mapStateToProps = (state) => {
         pageSize: state.profilesPage.pageSize,
         totalPages: state.profilesPage.totalPages,
         isFetching: state.profilesPage.isFetching,
-        isFetched: state.profilesPage.isFetched
+        isFetched: state.profilesPage.isFetched,
+        subscriptionInProgress: state.profilesPage.subscriptionInProgress
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getProfiles: (pageNumber, pageSize) => dispatch(getProfilesThunk(pageNumber, pageSize))
+        getProfiles: (pageNumber, pageSize) => dispatch(getProfilesThunk(pageNumber, pageSize)),
+        followProfile: (id) => dispatch(followProfileThunk(id)),
+        unfollowProfile: (id) => dispatch(unfollowProfileThunk(id))
     }
 }
 
