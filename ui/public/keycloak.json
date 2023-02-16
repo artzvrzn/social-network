@@ -1,0 +1,12 @@
+{
+  "realm": "spring-boot",
+  "auth-server-url": "http://localhost:8181/",
+  "ssl-required": "external",
+  "resource": "react-ui",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "lBgkLBkH3hwbOkTlhkwBjI7Q7xYTYkJq"
+  },
+  "confidential-port": 0,
+  "policy-enforcer": {}
+}
