@@ -17,7 +17,15 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Subs
   @Query("from Subscription s where s.target.id = :profileId")
   Page<Subscription> getAllSubscribers(@Param("profileId") Long profileId, Pageable pageable);
 
+  @EntityGraph(attributePaths = "subscriber")
+  @Query("from Subscription s where s.target.owner = :owner")
+  Page<Subscription> getAllSubscribers(@Param("owner") String owner, Pageable pageable);
+
   @EntityGraph(attributePaths = "target")
   @Query("from Subscription s where s.subscriber.id = :profileId")
   Page<Subscription> getAllSubscriptions(@Param("profileId") Long profileId, Pageable pageable);
+
+  @EntityGraph(attributePaths = "target")
+  @Query("from Subscription s where s.subscriber.owner = :owner")
+  Page<Subscription> getAllSubscriptions(@Param("owner") String owner, Pageable pageable);
 }

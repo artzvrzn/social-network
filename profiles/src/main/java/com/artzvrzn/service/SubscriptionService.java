@@ -9,9 +9,13 @@ public interface SubscriptionService {
 
   Page<ProfileDto> getSubscribers(Long profileId, int page, int size);
 
+  Page<ProfileDto> getSubscribers(String userId, int page, int size);
+
   Page<ProfileDto> getSubscriptions(Long profileId, int page, int size);
 
-  void follow(SubscriptionDto dto);
+  Page<ProfileDto> getSubscriptions(String userId, int page, int size);
 
-  void unfollow(SubscriptionDto dto);
+  void follow(Long targetId);
+
+  void unfollow(Long targetId);
 }
